@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XDBOT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="status-panel" aria-label="XDBOT system status">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">XD</div>
+          <div>
+            <h1>XDBOT</h1>
+            <p>Neural chat interface</p>
+          </div>
+        </div>
+
+        <div class="core">
+          <div class="core-ring ring-one"></div>
+          <div class="core-ring ring-two"></div>
+          <div class="core-dot"></div>
+        </div>
+
+        <div class="metric-grid">
+          <article>
+            <span>Signal</span>
+            <strong>99.8%</strong>
+          </article>
+          <article>
+            <span>Latency</span>
+            <strong>12ms</strong>
+          </article>
+          <article>
+            <span>Mode</span>
+            <strong>Hyper</strong>
+          </article>
+          <article>
+            <span>Shield</span>
+            <strong>Online</strong>
+          </article>
+        </div>
+
+        <div class="sidebar-actions">
+          <button type="button" id="newChatButton">New chat</button>
+          <button type="button" id="clearChatButton">Clear</button>
+        </div>
+
+        <div class="history-panel" aria-label="Recent chats">
+          <p>Recent</p>
+          <button type="button" class="active">XDBOT session</button>
+        </div>
+      </section>
+
+      <section class="chat-panel" aria-label="XDBOT chat">
+        <header class="chat-header">
+          <div>
+            <p class="eyebrow">AI assistant</p>
+            <h2>XDBOT Chat</h2>
+          </div>
+          <div class="header-tools">
+            <button type="button" id="regenerateButton">Regenerate</button>
+            <div class="live-pill">
+              <span></span>
+              Online
+            </div>
+          </div>
+        </header>
+
+        <div class="chat-window" id="chatWindow" aria-live="polite">
+          <article class="message bot">
+            <div class="avatar">X</div>
+            <div class="bubble">
+              <p>
+                XDBOT initialized. Send me an idea, question, mission, or code
+                problem and I will light up the grid.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="quick-actions" aria-label="Prompt shortcuts">
+          <button type="button" data-prompt="Design me a futuristic game idea.">
+            Game idea
+          </button>
+          <button type="button" data-prompt="Help me write a cool intro for XDBOT.">
+            Intro
+          </button>
+          <button type="button" data-prompt="Give me a plan for learning JavaScript.">
+            Learn JS
+          </button>
+        </div>
+
+        <form class="composer" id="chatForm">
+          <input
+            id="messageInput"
+            type="text"
+            autocomplete="off"
+            placeholder="Message XDBOT..."
+            aria-label="Message XDBOT"
+          />
+          <button type="submit" aria-label="Send message">
+            <span>Send</span>
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

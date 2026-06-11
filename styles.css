@@ -1,0 +1,462 @@
+:root {
+  color-scheme: dark;
+  --bg: #05030b;
+  --panel: rgba(16, 12, 30, 0.82);
+  --panel-strong: rgba(28, 18, 48, 0.92);
+  --line: rgba(191, 111, 255, 0.46);
+  --line-hot: #c44dff;
+  --text: #f6f1ff;
+  --muted: #b8accf;
+  --cyan: #46e6ff;
+  --green: #5dffba;
+  --pink: #ff62d8;
+  --shadow: 0 0 36px rgba(179, 71, 255, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(196, 77, 255, 0.2), transparent 28%),
+    radial-gradient(circle at 80% 20%, rgba(70, 230, 255, 0.16), transparent 24%),
+    linear-gradient(135deg, #05030b 0%, #11071f 52%, #05030b 100%);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  padding: 28px 0;
+}
+
+.status-panel,
+.chat-panel {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow), inset 0 0 28px rgba(196, 77, 255, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.status-panel::after,
+.chat-panel::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border: 1px solid rgba(196, 77, 255, 0.72);
+  filter: blur(8px);
+}
+
+.status-panel {
+  min-height: 680px;
+  padding: 26px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.brand {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.brand-mark,
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--line-hot), #6328ff);
+  box-shadow: 0 0 22px rgba(196, 77, 255, 0.76);
+}
+
+.brand-mark {
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.brand p,
+.eyebrow,
+.metric-grid span {
+  color: var(--muted);
+}
+
+.core {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 88px auto 70px;
+}
+
+.core-ring,
+.core-dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.core-ring {
+  border: 1px solid rgba(196, 77, 255, 0.62);
+  box-shadow: inset 0 0 24px rgba(196, 77, 255, 0.2), 0 0 30px rgba(196, 77, 255, 0.3);
+}
+
+.ring-one {
+  animation: spin 12s linear infinite;
+  border-top-color: var(--cyan);
+}
+
+.ring-two {
+  inset: 34px;
+  animation: spin 8s linear infinite reverse;
+  border-right-color: var(--pink);
+}
+
+.core-dot {
+  inset: 86px;
+  background: radial-gradient(circle, #ffffff 0 12%, var(--line-hot) 26%, transparent 68%);
+  filter: drop-shadow(0 0 28px var(--line-hot));
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric-grid article {
+  min-height: 86px;
+  padding: 16px;
+  border: 1px solid rgba(196, 77, 255, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.metric-grid strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 22px;
+}
+
+.sidebar-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.sidebar-actions button,
+.history-panel button,
+#regenerateButton {
+  min-height: 40px;
+  border: 1px solid rgba(196, 77, 255, 0.44);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-panel {
+  margin-top: 18px;
+}
+
+.history-panel p {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.history-panel button {
+  width: 100%;
+  text-align: left;
+  padding: 0 12px;
+}
+
+.history-panel button.active {
+  border-color: rgba(70, 230, 255, 0.45);
+  background: rgba(70, 230, 255, 0.08);
+}
+
+.chat-panel {
+  min-height: 680px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chat-header,
+.composer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.eyebrow {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.chat-header h2 {
+  font-size: clamp(24px, 4vw, 38px);
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(93, 255, 186, 0.52);
+  border-radius: 999px;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.live-pill span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px var(--green);
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 22px;
+  overflow-y: auto;
+  scrollbar-color: var(--line-hot) transparent;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  max-width: min(680px, 100%);
+  animation: rise 0.28s ease-out both;
+}
+
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.message.user .avatar {
+  background: linear-gradient(135deg, var(--cyan), #226cff);
+}
+
+.bubble {
+  padding: 14px 16px;
+  border: 1px solid rgba(196, 77, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  line-height: 1.5;
+}
+
+.bubble p {
+  white-space: pre-wrap;
+}
+
+.message.user .bubble {
+  border-color: rgba(70, 230, 255, 0.42);
+  background: rgba(70, 230, 255, 0.09);
+}
+
+.typing .bubble p::after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--line-hot);
+  box-shadow: 0 0 14px var(--line-hot);
+  animation: pulse 0.9s ease-in-out infinite;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 16px;
+  flex-wrap: wrap;
+}
+
+.quick-actions button,
+.composer button {
+  min-height: 42px;
+  border: 1px solid rgba(196, 77, 255, 0.55);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(196, 77, 255, 0.1);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(196, 77, 255, 0.18);
+}
+
+.quick-actions button {
+  padding: 0 14px;
+}
+
+.composer {
+  border-top: 1px solid rgba(196, 77, 255, 0.2);
+}
+
+.composer input {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  border: 1px solid rgba(196, 77, 255, 0.5);
+  border-radius: 8px;
+  padding: 0 16px;
+  color: var(--text);
+  background: rgba(5, 3, 11, 0.72);
+  font: inherit;
+  outline: none;
+}
+
+.composer input:focus {
+  border-color: var(--line-hot);
+  box-shadow: 0 0 20px rgba(196, 77, 255, 0.34);
+}
+
+.composer button {
+  width: 104px;
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, var(--line-hot), #6328ff);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(196, 77, 255, 0.42);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.08);
+    opacity: 0.78;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .status-panel {
+    min-height: 360px;
+  }
+
+  .core {
+    width: 170px;
+    height: 170px;
+    margin: 28px auto;
+  }
+
+  .core-dot {
+    inset: 58px;
+  }
+
+  .chat-panel {
+    min-height: 620px;
+  }
+}
+
+@media (max-width: 560px) {
+  .shell {
+    width: min(100% - 20px, 1180px);
+    padding: 10px 0;
+  }
+
+  .chat-header,
+  .composer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .live-pill {
+    align-self: flex-start;
+  }
+
+  .composer button {
+    width: 100%;
+  }
+}
