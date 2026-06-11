@@ -18,7 +18,7 @@ const memory = {
   lastTopic: "",
   greetingCount: 0,
   messages: [],
-  personality: "helpful",
+  personality: "chill",
 };
 
 const knowledgeBase = {

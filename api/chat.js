@@ -4,10 +4,12 @@ export default async function handler(request, response) {
     return response.status(405).json({ reply: "Method not allowed" });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  const googleApiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+
+  if (!googleApiKey) {
     return response.status(500).json({
       reply:
-        "XDBOT backend error: OPENAI_API_KEY is not set in Vercel project settings.",
+        "XDBOT backend error: GOOGLE_API_KEY is not set in Vercel project settings.",
     });
   }
 
@@ -16,32 +18,37 @@ export default async function handler(request, response) {
       ? request.body.messages
       : [];
 
-    const input = [
-      {
-        role: "developer",
-        content:
-          "You are XDBOT, a futuristic AI chatbot. Answer like a real helpful AI. Analyze the user's whole message, stay in context, adapt personality when asked, and give direct useful answers. Do not say you processed the text unless that is genuinely useful.",
-      },
-      ...messages
-        .filter((message) => message?.role && message?.content)
-        .map((message) => ({
-          role: message.role === "assistant" ? "assistant" : "user",
-          content: String(message.content),
-        })),
-    ];
+    const contents = messages
+      .filter((message) => message?.role && message?.content)
+      .map((message) => ({
+        role: message.role === "assistant" ? "model" : "user",
+        parts: [{ text: String(message.content) }],
+      }));
 
-    const aiResponse = await fetch("https://api.openai.com/v1/responses", {
+    const model = process.env.XDBOT_MODEL || "gemini-3.5-flash";
+    const aiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "x-goog-api-key": googleApiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: process.env.XDBOT_MODEL || "gpt-4.1-mini",
-        input,
-        max_output_tokens: 700,
+        system_instruction: {
+          parts: [
+            {
+              text: "You are XDBOT, a futuristic AI chatbot with a chill, friendly personality. Answer like a real helpful AI. Analyze the user's whole message, stay in context, adapt personality when asked, and give direct useful answers. Keep the vibe relaxed, clear, and useful. Do not say you processed the text unless that is genuinely useful.",
+            },
+          ],
+        },
+        contents,
+        generationConfig: {
+          maxOutputTokens: 700,
+        },
       }),
-    });
+    },
+    );
 
     const data = await aiResponse.json();
 
@@ -49,15 +56,13 @@ export default async function handler(request, response) {
       return response.status(aiResponse.status).json({
         reply:
           data?.error?.message ||
-          `XDBOT backend error: OpenAI returned HTTP ${aiResponse.status}`,
+          `XDBOT backend error: Google Gemini returned HTTP ${aiResponse.status}`,
       });
     }
 
     const text =
-      data.output_text ||
-      data.output
-        ?.flatMap((item) => item.content || [])
-        .map((content) => content.text)
+      data.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text)
         .filter(Boolean)
         .join("\n")
         .trim();

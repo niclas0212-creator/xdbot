@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 $port = if ($env:XDBOT_PORT) { [int]$env:XDBOT_PORT } else { 53124 }
-$model = if ($env:XDBOT_MODEL) { $env:XDBOT_MODEL } else { "gpt-4.1-mini" }
+$model = if ($env:XDBOT_MODEL) { $env:XDBOT_MODEL } else { "gemini-3.5-flash" }
 $root = [System.IO.Path]::GetFullPath((Split-Path -Parent $MyInvocation.MyCommand.Path))
 $address = [System.Net.IPAddress]::Parse("127.0.0.1")
 
@@ -97,16 +97,12 @@ function Read-HttpRequest {
 function Get-ResponseText {
   param ($ApiResponse)
 
-  if ($ApiResponse.output_text) {
-    return [string]$ApiResponse.output_text
-  }
-
   $parts = New-Object System.Collections.Generic.List[string]
 
-  foreach ($item in @($ApiResponse.output)) {
-    foreach ($content in @($item.content)) {
-      if ($content.text) {
-        $parts.Add([string]$content.text)
+  foreach ($candidate in @($ApiResponse.candidates)) {
+    foreach ($part in @($candidate.content.parts)) {
+      if ($part.text) {
+        $parts.Add([string]$part.text)
       }
     }
   }
@@ -117,39 +113,43 @@ function Get-ResponseText {
 function Invoke-XDBotAI {
   param ([array]$Messages)
 
-  if (-not $env:OPENAI_API_KEY) {
-    throw "OPENAI_API_KEY is not set. Set it before starting the server."
+  $googleApiKey = if ($env:GOOGLE_API_KEY) { $env:GOOGLE_API_KEY } else { $env:GEMINI_API_KEY }
+
+  if (-not $googleApiKey) {
+    throw "GOOGLE_API_KEY is not set. Set it before starting the server."
   }
 
   $conversation = New-Object System.Collections.Generic.List[object]
-  $conversation.Add(@{
-    role = "developer"
-    content = "You are XDBOT, a futuristic AI chatbot. Answer like a real helpful AI. Analyze the user's whole message, stay in context, adapt personality when asked, and give direct useful answers. Do not say you processed the text unless that is genuinely useful."
-  })
 
   foreach ($message in @($Messages)) {
     if ($message.role -and $message.content) {
-      $role = if ($message.role -eq "assistant") { "assistant" } else { "user" }
+      $role = if ($message.role -eq "assistant") { "model" } else { "user" }
       $conversation.Add(@{
         role = $role
-        content = [string]$message.content
+        parts = @(@{ text = [string]$message.content })
       })
     }
   }
 
   $payload = @{
-    model = $model
-    input = $conversation
-    max_output_tokens = 700
+    system_instruction = @{
+      parts = @(@{
+        text = "You are XDBOT, a futuristic AI chatbot with a chill, friendly personality. Answer like a real helpful AI. Analyze the user's whole message, stay in context, adapt personality when asked, and give direct useful answers. Keep the vibe relaxed, clear, and useful. Do not say you processed the text unless that is genuinely useful."
+      })
+    }
+    contents = $conversation
+    generationConfig = @{
+      maxOutputTokens = 700
+    }
   } | ConvertTo-Json -Depth 8
 
   $headers = @{
-    Authorization = "Bearer $env:OPENAI_API_KEY"
+    "x-goog-api-key" = $googleApiKey
     "Content-Type" = "application/json"
   }
 
   $apiResponse = Invoke-RestMethod `
-    -Uri "https://api.openai.com/v1/responses" `
+    -Uri "https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent" `
     -Method Post `
     -Headers $headers `
     -Body $payload
